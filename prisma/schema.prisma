@@ -1,0 +1,169 @@
+// Xeno FDE — AI-Native Mini CRM
+// PostgreSQL schema. The CommunicationEvent table is the append-only source of
+// truth for the delivery funnel; Communication.status is derived from it.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LifecycleStage {
+  new
+  active
+  at_risk
+  dormant
+  vip
+}
+
+enum Channel {
+  whatsapp
+  sms
+  email
+  rcs
+}
+
+enum CampaignStatus {
+  draft
+  scheduled
+  sending
+  completed
+  failed
+}
+
+enum CommStatus {
+  queued
+  sent
+  delivered
+  failed
+  opened
+  read
+  clicked
+  converted
+}
+
+enum SegmentCreator {
+  marketer
+  ai
+}
+
+// Single-row application settings (single-tenant demo). The brand profile feeds
+// the AI copy prompts; enabledChannels gates channel selection; proactive flag
+// toggles dashboard suggestions. Always one row, id = "singleton".
+model AppSettings {
+  id                   String   @id @default("singleton")
+  brandName            String   @default("Saffron & Co.")
+  supportEmail         String   @default("hello@saffronco.in")
+  brandVoice           String   @default("Warm, premium and conversational. We speak to shoppers like friends.")
+  enabledChannels      Channel[] @default([whatsapp, sms, email])
+  proactiveSuggestions Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Customer {
+  id             String          @id @default(cuid())
+  name           String
+  email          String          @unique
+  phone          String?
+  city           String?
+  totalSpend     Float           @default(0)
+  orderCount     Int             @default(0)
+  avgOrderValue  Float           @default(0)
+  firstOrderAt   DateTime?
+  lastOrderAt    DateTime?
+  lifecycleStage LifecycleStage  @default(new)
+  tags           String[]
+  orders         Order[]
+  communications Communication[]
+  createdAt      DateTime        @default(now())
+
+  @@index([lifecycleStage])
+  @@index([totalSpend])
+  @@index([lastOrderAt])
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  amount     Float
+  items      Json // OrderItem[]: [{ name, qty, price }]
+  channel    String?
+  placedAt   DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([customerId])
+  @@index([placedAt])
+}
+
+model Segment {
+  id            String         @id @default(cuid())
+  name          String
+  description   String?
+  rulesJson     Json // structured RuleTree shared by manual + AI paths
+  rulesText     String?
+  customerCount Int            @default(0)
+  createdBy     SegmentCreator @default(marketer)
+  aiReason      String?
+  campaigns     Campaign[]
+  createdAt     DateTime       @default(now())
+}
+
+model Campaign {
+  id             String          @id @default(cuid())
+  name           String
+  goal           String?
+  segmentId      String
+  segment        Segment         @relation(fields: [segmentId], references: [id])
+  channel        Channel
+  message        String
+  status         CampaignStatus  @default(draft)
+  audienceSize   Int             @default(0)
+  predictionJson Json? // CampaignPrediction (grounded heuristic)
+  sentAt         DateTime?
+  communications Communication[]
+  createdAt      DateTime        @default(now())
+
+  @@index([status])
+  @@index([segmentId])
+}
+
+model Communication {
+  id          String               @id @default(cuid())
+  campaignId  String
+  campaign    Campaign             @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  customerId  String
+  customer    Customer             @relation(fields: [customerId], references: [id])
+  channel     Channel
+  status      CommStatus           @default(queued) // DERIVED: max-rank of its events
+  retries     Int                  @default(0)
+  lastEventAt DateTime?
+  events      CommunicationEvent[]
+  createdAt   DateTime             @default(now())
+
+  @@index([campaignId])
+  @@index([customerId])
+  @@index([status])
+}
+
+// THE SPINE — append-only, source of truth for the funnel & analytics.
+model CommunicationEvent {
+  id               String        @id @default(cuid())
+  communicationId  String
+  communication    Communication @relation(fields: [communicationId], references: [id], onDelete: Cascade)
+  status           CommStatus
+  attempt          Int           @default(1)
+  attributedAmount Float? // set on `converted`
+  occurredAt       DateTime // event time (from callback `at`)
+  receivedAt       DateTime      @default(now())
+
+  // Idempotency: one row per (communication, status, attempt).
+  @@unique([communicationId, status, attempt])
+  @@index([communicationId])
+  @@index([status])
+  @@index([occurredAt])
+}
