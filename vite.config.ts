@@ -12,4 +12,8 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Force Nitro on and hard-pin the Vercel preset. Without this, self-deploys
+  // outside the Lovable sandbox produce a Vite-only build with no SSR server,
+  // which makes Vercel serve a 404 for the deployment.
+  nitro: { preset: "vercel" },
 });
