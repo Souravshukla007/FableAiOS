@@ -1,4 +1,4 @@
-# 🎯 nexusAiOS: AI-Native Mini CRM
+# 🎯 Fable: AI-Native Mini CRM
 
 [![TanStack Start](https://img.shields.io/badge/TanStack_Start-1.16-FF4154?style=flat-square&logo=react)](https://tanstack.com/start)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react)](https://react.dev/)
