@@ -89,26 +89,35 @@ export async function lifecycleDistribution(): Promise<{ stage: string; count: n
   return rows.map((r) => ({ stage: r.lifecycleStage, count: r._count }));
 }
 
-export async function channelComparison(): Promise<
+export async function channelComparison(days?: number): Promise<
   { channel: string; sent: number; delivered: number; opened: number; clicked: number; revenue: number }[]
 > {
-  const store = await loadStore();
+  // Count events on the spine within the optional [now - days, now] window.
+  // Event-based counting matches engagementTrend's approach and is time-accurate
+  // (one row per status transition). When `days` is omitted we count all-time.
+  const sinceMs = days && days > 0 ? Date.now() - days * DAY : null;
+  const rows = await prisma.communicationEvent.findMany({
+    where: {
+      status: { in: ["sent", "delivered", "opened", "clicked", "converted"] },
+      ...(sinceMs !== null ? { occurredAt: { gte: new Date(sinceMs) } } : {}),
+    },
+    select: { status: true, attributedAmount: true, communication: { select: { channel: true } } },
+  });
+
   const map: Record<string, { sent: number; delivered: number; opened: number; clicked: number; revenue: number }> = {};
-  const DELIVERED: CommStatus[] = ["delivered", "opened", "read", "clicked", "converted"];
-  const OPENED: CommStatus[] = ["opened", "read", "clicked", "converted"];
-  const CLICKED: CommStatus[] = ["clicked", "converted"];
-  for (const cm of store.communications) {
-    const m = (map[cm.channel] ??= { sent: 0, delivered: 0, opened: 0, clicked: 0, revenue: 0 });
-    if (cm.status !== "queued") m.sent++;
-    if (DELIVERED.includes(cm.status)) m.delivered++;
-    if (OPENED.includes(cm.status)) m.opened++;
-    if (CLICKED.includes(cm.status)) m.clicked++;
+  for (const r of rows) {
+    const channel = r.communication.channel;
+    const m = (map[channel] ??= { sent: 0, delivered: 0, opened: 0, clicked: 0, revenue: 0 });
+    switch (r.status as CommStatus) {
+      case "sent": m.sent++; break;
+      case "delivered": m.delivered++; break;
+      case "opened": m.opened++; break;
+      case "clicked": m.clicked++; break;
+      case "converted": m.revenue += r.attributedAmount ?? 0; break;
+      default: break;
+    }
   }
-  // Real revenue per channel from converted campaigns.
-  for (const c of store.campaigns) {
-    if (map[c.channel]) map[c.channel].revenue += c.stats.attributedRevenue;
-  }
-  return Object.entries(map).map(([channel, v]) => ({ channel, ...v }));
+  return Object.entries(map).map(([channel, v]) => ({ channel, ...v, revenue: Math.round(v.revenue) }));
 }
 
 export async function engagementTrend(days = 14): Promise<{ day: string; open: number; click: number; conversion: number }[]> {
