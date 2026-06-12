@@ -27,6 +27,7 @@ import { Route as ApiCustomersRouteImport } from './routes/api/customers'
 import { Route as ApiCommunicationsRouteImport } from './routes/api/communications'
 import { Route as ApiCampaignsRouteImport } from './routes/api/campaigns'
 import { Route as ApiSegmentsPreviewRouteImport } from './routes/api/segments.preview'
+import { Route as ApiSegmentsIdRouteImport } from './routes/api/segments.$id'
 import { Route as ApiNotificationsMarkAllReadRouteImport } from './routes/api/notifications.mark-all-read'
 import { Route as ApiNotificationsIdRouteImport } from './routes/api/notifications.$id'
 import { Route as ApiCustomersIdRouteImport } from './routes/api/customers.$id'
@@ -135,6 +136,11 @@ const ApiCampaignsRoute = ApiCampaignsRouteImport.update({
 const ApiSegmentsPreviewRoute = ApiSegmentsPreviewRouteImport.update({
   id: '/preview',
   path: '/preview',
+  getParentRoute: () => ApiSegmentsRoute,
+} as any)
+const ApiSegmentsIdRoute = ApiSegmentsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
   getParentRoute: () => ApiSegmentsRoute,
 } as any)
 const ApiNotificationsMarkAllReadRoute =
@@ -268,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/api/customers/$id': typeof ApiCustomersIdRouteWithChildren
   '/api/notifications/$id': typeof ApiNotificationsIdRoute
   '/api/notifications/mark-all-read': typeof ApiNotificationsMarkAllReadRoute
+  '/api/segments/$id': typeof ApiSegmentsIdRoute
   '/api/segments/preview': typeof ApiSegmentsPreviewRoute
   '/api/campaigns/$id/analysis': typeof ApiCampaignsIdAnalysisRoute
   '/api/campaigns/$id/launch': typeof ApiCampaignsIdLaunchRoute
@@ -307,6 +314,7 @@ export interface FileRoutesByTo {
   '/api/customers/$id': typeof ApiCustomersIdRouteWithChildren
   '/api/notifications/$id': typeof ApiNotificationsIdRoute
   '/api/notifications/mark-all-read': typeof ApiNotificationsMarkAllReadRoute
+  '/api/segments/$id': typeof ApiSegmentsIdRoute
   '/api/segments/preview': typeof ApiSegmentsPreviewRoute
   '/api/campaigns/$id/analysis': typeof ApiCampaignsIdAnalysisRoute
   '/api/campaigns/$id/launch': typeof ApiCampaignsIdLaunchRoute
@@ -347,6 +355,7 @@ export interface FileRoutesById {
   '/api/customers/$id': typeof ApiCustomersIdRouteWithChildren
   '/api/notifications/$id': typeof ApiNotificationsIdRoute
   '/api/notifications/mark-all-read': typeof ApiNotificationsMarkAllReadRoute
+  '/api/segments/$id': typeof ApiSegmentsIdRoute
   '/api/segments/preview': typeof ApiSegmentsPreviewRoute
   '/api/campaigns/$id/analysis': typeof ApiCampaignsIdAnalysisRoute
   '/api/campaigns/$id/launch': typeof ApiCampaignsIdLaunchRoute
@@ -388,6 +397,7 @@ export interface FileRouteTypes {
     | '/api/customers/$id'
     | '/api/notifications/$id'
     | '/api/notifications/mark-all-read'
+    | '/api/segments/$id'
     | '/api/segments/preview'
     | '/api/campaigns/$id/analysis'
     | '/api/campaigns/$id/launch'
@@ -427,6 +437,7 @@ export interface FileRouteTypes {
     | '/api/customers/$id'
     | '/api/notifications/$id'
     | '/api/notifications/mark-all-read'
+    | '/api/segments/$id'
     | '/api/segments/preview'
     | '/api/campaigns/$id/analysis'
     | '/api/campaigns/$id/launch'
@@ -466,6 +477,7 @@ export interface FileRouteTypes {
     | '/api/customers/$id'
     | '/api/notifications/$id'
     | '/api/notifications/mark-all-read'
+    | '/api/segments/$id'
     | '/api/segments/preview'
     | '/api/campaigns/$id/analysis'
     | '/api/campaigns/$id/launch'
@@ -630,6 +642,13 @@ declare module '@tanstack/react-router' {
       path: '/preview'
       fullPath: '/api/segments/preview'
       preLoaderRoute: typeof ApiSegmentsPreviewRouteImport
+      parentRoute: typeof ApiSegmentsRoute
+    }
+    '/api/segments/$id': {
+      id: '/api/segments/$id'
+      path: '/$id'
+      fullPath: '/api/segments/$id'
+      preLoaderRoute: typeof ApiSegmentsIdRouteImport
       parentRoute: typeof ApiSegmentsRoute
     }
     '/api/notifications/mark-all-read': {
@@ -838,10 +857,12 @@ const ApiNotificationsRouteWithChildren =
   ApiNotificationsRoute._addFileChildren(ApiNotificationsRouteChildren)
 
 interface ApiSegmentsRouteChildren {
+  ApiSegmentsIdRoute: typeof ApiSegmentsIdRoute
   ApiSegmentsPreviewRoute: typeof ApiSegmentsPreviewRoute
 }
 
 const ApiSegmentsRouteChildren: ApiSegmentsRouteChildren = {
+  ApiSegmentsIdRoute: ApiSegmentsIdRoute,
   ApiSegmentsPreviewRoute: ApiSegmentsPreviewRoute,
 }
 

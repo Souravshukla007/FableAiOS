@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Sparkles, Layers, Wand2, X, Loader2 } from "lucide-react";
+import { Plus, Sparkles, Layers, Wand2, X, Loader2, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import type { Segment, SegmentRule, SegmentOperator, RuleCombinator } from "@/lib/types";
@@ -17,6 +17,11 @@ import { WhyThisAudience } from "@/components/shared/WhyThisAudience";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
@@ -63,17 +68,69 @@ function Segments() {
 }
 
 function SegmentCard({ s }: { s: Segment }) {
+  const qc = useQueryClient();
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      await api.deleteSegment(s.id);
+      await qc.invalidateQueries({ queryKey: ["segments"] });
+      toast.success("Segment deleted");
+    } catch (e) {
+      toast.error("Couldn't delete segment", {
+        description: e instanceof Error ? e.message : undefined,
+      });
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <Card className="flex h-full flex-col p-5">
       <div className="flex items-start justify-between">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-accent-foreground">
           <Layers className="h-5 w-5" />
         </div>
-        {s.createdBy === "ai" && (
-          <Badge className="gap-1 bg-primary/15 text-primary hover:bg-primary/15">
-            <Sparkles className="h-3 w-3" /> AI-created
-          </Badge>
-        )}
+        <div className="flex items-center gap-1.5">
+          {s.createdBy === "ai" && (
+            <Badge className="gap-1 bg-primary/15 text-primary hover:bg-primary/15">
+              <Sparkles className="h-3 w-3" /> AI-created
+            </Badge>
+          )}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                disabled={deleting}
+                aria-label={`Delete segment ${s.name}`}
+              >
+                {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete “{s.name}”?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This removes the segment definition. Segments used by an existing campaign
+                  can't be deleted — delete or reassign those campaigns first. This action
+                  can't be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </div>
       <h3 className="mt-3 font-semibold">{s.name}</h3>
       <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{s.description}</p>

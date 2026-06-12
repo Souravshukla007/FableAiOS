@@ -21,12 +21,13 @@ export const Route = createFileRoute("/analytics")({
 const TT = { background: "var(--color-popover)", border: "1px solid var(--color-border)", borderRadius: 12, fontSize: 12 };
 
 function Analytics() {
-  const channels = useQuery({ queryKey: ["channelCompare"], queryFn: api.getChannelComparison });
-  const trend = useQuery({ queryKey: ["trend"], queryFn: api.getEngagementTrend });
-  const campaigns = useQuery({ queryKey: ["campaigns"], queryFn: api.getCampaigns });
-  const segs = useQuery({ queryKey: ["segments"], queryFn: api.getSegments });
   const [range, setRange] = useState("30");
   const [chFilter, setChFilter] = useState("all");
+  const days = Number(range);
+  const channels = useQuery({ queryKey: ["channelCompare", days], queryFn: () => api.getChannelComparison(days) });
+  const trend = useQuery({ queryKey: ["trend", days], queryFn: () => api.getEngagementTrend(days) });
+  const campaigns = useQuery({ queryKey: ["campaigns"], queryFn: api.getCampaigns });
+  const segs = useQuery({ queryKey: ["segments"], queryFn: api.getSegments });
 
   const filteredCh = (channels.data ?? []).filter((c) => chFilter === "all" || c.channel === chFilter);
   const bestSegments = (segs.data ?? [])
