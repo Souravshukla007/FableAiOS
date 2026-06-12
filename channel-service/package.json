@@ -1,0 +1,11 @@
+{
+  "name": "xeno-channel-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Separate stubbed messaging provider for the Xeno Mini CRM. Simulates delivery lifecycle and async callbacks.",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs"
+  }
+}

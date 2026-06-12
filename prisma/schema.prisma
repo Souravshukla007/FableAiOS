@@ -167,3 +167,37 @@ model CommunicationEvent {
   @@index([status])
   @@index([occurredAt])
 }
+
+enum NotificationKind {
+  CAMPAIGN_LAUNCHED
+  CAMPAIGN_DELIVERED
+  CAMPAIGN_FAILED
+  AI_SUGGESTION
+}
+
+enum NotificationSeverity {
+  INFO
+  SUCCESS
+  WARN
+  ERROR
+}
+
+// Persistent notification inbox (the bell in TopBar). Producers live in
+// launch.server.ts (CAMPAIGN_LAUNCHED), receipts.ts (CAMPAIGN_DELIVERED /
+// CAMPAIGN_FAILED at the sending->completed transition), and analytics.server
+// proactiveSuggestions (AI_SUGGESTION, deduped per entityId per 12h window).
+model Notification {
+  id         String               @id @default(cuid())
+  kind       NotificationKind
+  severity   NotificationSeverity @default(INFO)
+  title      String
+  body       String?
+  link       String? // relative URL, e.g. "/campaigns/abc123"
+  entityType String? // "campaign" | "suggestion"
+  entityId   String? // dedup + click-through anchor
+  readAt     DateTime?
+  createdAt  DateTime             @default(now())
+
+  @@index([readAt, createdAt])
+  @@index([kind, entityId])
+}

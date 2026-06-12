@@ -62,8 +62,8 @@ Marketers face three key problems:
 *   **Structured Segment Builder**: Compose rules (`totalSpend > 15000 AND lastOrderDays > 90`) with a live audience preview counted against the real dataset.
 *   **AI Natural-Language Segments**: Describe an audience in plain English ("high value customers who haven't ordered in 90 days") and the system derives equivalent structured rules + a live customer count.
 
-### 🧠 AI Copilot
-*   **Goal → Recommendation**: A marketer states a goal; the Copilot returns a grounded **audience**, **channel**, **message**, and **prediction** end-to-end.
+### 🧠 Jarvis
+*   **Goal → Recommendation**: A marketer states a goal; Jarvis returns a grounded **audience**, **channel**, **message**, and **prediction** end-to-end.
 *   **"Why This Audience?" Explainability**: Every recommendation is backed by real signals — `AVG(totalSpend)`, mean recency, channel affinity %, dominant lifecycle — each traceable to a SQL aggregate.
 *   **Honest Campaign Prediction**: Expected delivery/open/click/conversion and a revenue range, computed as a heuristic over **historical per-channel rates × segment AOV**, with a confidence label. Explicitly labelled as not a trained model.
 *   **Post-Mortem & Next Action**: After a campaign, a grounded analysis of what worked plus one concrete next action (e.g. "48-hour follow-up to clickers who didn't buy").
@@ -91,34 +91,34 @@ The CRM is a single full-stack TanStack Start app; only the Channel Service is a
 
 ```mermaid
 graph TD
-    User([Marketer]) -->|Interacts| UI["TanStack Start UI — Dashboard, Copilot, Campaigns, Analytics"]
+    User([Marketer]) -->|interacts| UI["TanStack Start UI<br/>Dashboard, Jarvis, Campaigns, Analytics"]
 
-    subgraph CRM [TanStack Start App - CRM Core]
+    subgraph CRM["TanStack Start App (CRM Core)"]
         UI -->|fetch /api| ClientAPI["src/lib/api.ts"]
-        ClientAPI -->|Customers and Segments| DataAPI["Server Routes: customers, segments"]
-        ClientAPI -->|Goal| AiAPI["AI Routes: ai/recommend, ai/explain, ai/segment"]
-        ClientAPI -->|Launch| LaunchAPI["POST /api/campaigns/:id/launch"]
-        ClientAPI -->|Funnel and KPIs| AnalyticsAPI["GET /api/analytics/*"]
-        ReceiptAPI["POST /api/receipts — idempotent, ordering-safe"]
+        ClientAPI -->|customers / segments| DataAPI["Server Routes<br/>customers, segments"]
+        ClientAPI -->|goal| AiAPI["AI Routes<br/>ai/recommend, ai/explain, ai/segment"]
+        ClientAPI -->|launch| LaunchAPI["POST /api/campaigns/:id/launch"]
+        ClientAPI -->|KPIs and funnel| AnalyticsAPI["GET /api/analytics/*"]
+        ReceiptAPI["POST /api/receipts<br/>idempotent, ordering-safe"]
     end
 
-    subgraph DB [Persistence]
-        DataAPI --> PG[(PostgreSQL - Neon)]
+    subgraph Persistence["Persistence"]
+        DataAPI --> PG[(PostgreSQL Neon)]
         AnalyticsAPI --> PG
         LaunchAPI -->|create queued comms| PG
-        ReceiptAPI -->|append events, derive status| PG
+        ReceiptAPI -->|append events| PG
     end
 
-    subgraph Channel [SEPARATE Channel Service - Node process]
-        Sim["Provider Simulator — lifecycle, retries, failures"]
+    subgraph ChannelSvc["Channel Service (separate Node process)"]
+        Sim["Provider Simulator<br/>lifecycle, retries, failures"]
     end
 
-    subgraph Services [External]
+    subgraph Services["External"]
         AiAPI -->|language only| Gemini["Google Gemini API"]
     end
 
     LaunchAPI -->|POST /send/batch| Sim
-    Sim -->|async callbacks: delivered, opened, ...| ReceiptAPI
+    Sim -->|async callbacks| ReceiptAPI
 
     classDef client fill:#FF8C00,stroke:#d35400,stroke-width:2px,color:#fff;
     classDef api fill:#4A90E2,stroke:#2980b9,stroke-width:2px,color:#fff;
@@ -303,7 +303,7 @@ Data is generated **backwards from the cohorts we want to demo**, so segments an
 ## 📂 Project Structure
 
 ```text
-nexusAiOS/
+FableAiOS/
 ├── channel-service/            # SEPARATE messaging-provider simulator (own process)
 │   ├── server.mjs              # Zero-dep Node: lifecycle, retries, async callbacks
 │   ├── package.json            # Standalone start script
@@ -322,7 +322,7 @@ nexusAiOS/
 │   │   │   ├── analytics.*.ts  # overview, channels, lifecycle, revenue, engagement
 │   │   │   ├── communications.ts
 │   │   │   └── receipts.ts     # ◀ idempotent, ordering-safe callback sink
-│   │   ├── dashboard / customers / segments / copilot / campaigns / analytics / channel
+│   │   ├── dashboard / customers / segments / jarvis / campaigns / analytics / channel
 │   │   └── __root.tsx          # Root layout
 │   └── lib/
 │       ├── api.ts              # Client API layer (fetches /api/*)
@@ -354,7 +354,7 @@ Ensure you have the following installed:
 ### 2. Clone Repository
 ```bash
 git clone <your-repo-url>
-cd nexusAiOS
+cd FableAiOS
 ```
 
 ### 3. Install Core Dependencies
@@ -378,7 +378,7 @@ npm run dev                   # http://localhost:8080
 # Terminal 2 — Channel Service (provider simulator)
 cd channel-service && npm start   # http://localhost:8787
 ```
-Open [http://localhost:8080](http://localhost:8080), launch a campaign from **Copilot** or **Campaigns → New**, then watch **Channel Monitor** and **Analytics** fill in real time.
+Open [http://localhost:8080](http://localhost:8080), launch a campaign from **Jarvis** or **Campaigns → New**, then watch **Channel Monitor** and **Analytics** fill in real time.
 
 ### 6. Production Build
 ```bash
@@ -418,13 +418,13 @@ CRM_RECEIPT_URL="http://localhost:8080/api/receipts"
 
 Here is a visual overview of the key interfaces:
 
-| AI Copilot & Recommendation | Channel Monitor (Live Callbacks) |
+| Jarvis & Recommendation | Channel Monitor (Live Callbacks) |
 | :---: | :---: |
-| ![Copilot Mockup](https://via.placeholder.com/600x350/0F172A/F97316?text=AI+Copilot)<br>Goal → grounded audience, channel, message & prediction with reasoning. | ![Channel Monitor](https://via.placeholder.com/600x350/0F172A/22D3EE?text=Channel+Monitor)<br>Real-time funnel filling as async provider callbacks arrive. |
+| ![Jarvis](public/Jarvis.png)<br>Goal → grounded audience, channel, message & prediction with reasoning. | ![Channel Monitor](public/channel_Monitor.png)<br>Real-time funnel filling as async provider callbacks arrive. |
 
 | Analytics & Attribution | Segments & Explainability |
 | :---: | :---: |
-| ![Analytics](https://via.placeholder.com/600x350/0F172A/34D399?text=Analytics)<br>Per-channel funnels, weekly revenue, and engagement trends from the event spine. | ![Segments](https://via.placeholder.com/600x350/0F172A/A78BFA?text=Why+This+Audience)<br>Rule builder + "Why this audience?" signals traced to SQL aggregates. |
+| ![Analytics](public/Analytics.png)<br>Per-channel funnels, weekly revenue, and engagement trends from the event spine. | ![Segments](public/Segments.png)<br>Rule builder + "Why this audience?" signals traced to SQL aggregates. |
 
 ---
 
