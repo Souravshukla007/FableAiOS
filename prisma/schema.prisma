@@ -3,7 +3,11 @@
 // truth for the delivery funnel; Communication.status is derived from it.
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // "native" keeps local (Windows/macOS) dev working; the rhel target is the
+  // engine Vercel's serverless Node runtime (Amazon Linux) needs. Without it,
+  // `new PrismaClient()` throws at import on Vercel and every route 500s.
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
