@@ -4,13 +4,14 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip,
 } from "recharts";
-import { Users, Send, MailOpen, IndianRupee, Sparkles, ArrowRight } from "lucide-react";
+import { Users, Send, MailOpen, IndianRupee, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import { formatINRShort, formatPct, relativeTime, formatINR } from "@/lib/format";
 import { AppLayout, PageHeader } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/shared/StatCard";
 import { StatusBadge, ChannelIcon } from "@/components/shared/badges";
+import { JarvisIcon } from "@/components/shared/JarvisIcon";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -161,7 +162,7 @@ function Dashboard() {
         {(suggestions.isLoading || (suggestions.data && suggestions.data.length > 0)) && (
         <Card className="overflow-hidden border-primary/30 bg-gradient-to-b from-primary/5 to-transparent p-5">
           <div className="mb-3 flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-primary" />
+            <JarvisIcon className="h-4 w-4" />
             <h3 className="text-sm font-semibold">AI Suggestions</h3>
           </div>
           <div className="space-y-3">

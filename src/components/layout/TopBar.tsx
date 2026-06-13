@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Bell, Moon, Sun, Plus, CheckCheck } from "lucide-react";
+import { Bell, Moon, Sun, Plus, CheckCheck, ChevronDown, LogOut, User as UserIcon } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/lib/theme";
@@ -179,6 +179,53 @@ export function TopBar() {
                 ))}
               </div>
             )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="ml-1 h-9 gap-2 px-2 sm:pl-1.5 sm:pr-2"
+              aria-label="Account menu"
+            >
+              <img
+                src="/kargil.jpg"
+                alt=""
+                aria-hidden="true"
+                className="h-7 w-7 shrink-0 rounded-full object-cover ring-1 ring-border"
+              />
+              <span className="hidden text-sm font-medium leading-tight sm:inline">
+                Sourav SB
+              </span>
+              <ChevronDown className="hidden h-3.5 w-3.5 text-muted-foreground sm:inline" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <div className="flex items-center gap-2.5 px-2 py-2">
+              <img
+                src="/kargil.jpg"
+                alt=""
+                aria-hidden="true"
+                className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-border"
+              />
+              <div className="min-w-0 leading-tight">
+                <div className="truncate text-sm font-medium">Sourav SB</div>
+                <div className="truncate text-[11px] text-muted-foreground">
+                  Administrator
+                </div>
+              </div>
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => navigate({ to: "/settings" })}>
+              <UserIcon className="mr-2 h-4 w-4" />
+              Profile &amp; settings
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem disabled>
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign out
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

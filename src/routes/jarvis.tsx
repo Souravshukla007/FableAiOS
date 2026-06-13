@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  Sparkles, Send, Users, Rocket, RefreshCw, Pencil, Loader2, TrendingUp,
+  Send, Users, Rocket, RefreshCw, Pencil, Loader2, TrendingUp,
   RotateCcw, Coffee, Crown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,6 +10,7 @@ import { api } from "@/lib/api";
 import type { AIRecommendation, Channel } from "@/lib/types";
 import { formatINR, formatPct } from "@/lib/format";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { JarvisIcon } from "@/components/shared/JarvisIcon";
 import { ChannelIcon, ConfidenceBadge, channelMeta } from "@/components/shared/badges";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -95,7 +96,7 @@ function Jarvis() {
       <div className="mx-auto flex h-[calc(100vh-9rem)] max-w-3xl flex-col">
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-convert text-white shadow-lg shadow-primary/20">
-            <Sparkles className="h-6 w-6" />
+            <JarvisIcon className="h-7 w-7" />
           </div>
           <div>
             <h1 className="text-xl font-semibold tracking-tight">Jarvis</h1>
@@ -111,7 +112,7 @@ function Jarvis() {
                 animate={{ scale: 1, opacity: 1 }}
                 className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-convert/15"
               >
-                <Sparkles className="h-8 w-8 text-primary" />
+                <JarvisIcon className="h-9 w-9" />
               </motion.div>
               <h2 className="mt-4 text-lg font-semibold">What's your marketing goal?</h2>
               <p className="mt-1 max-w-sm text-sm text-muted-foreground">Pick a quick start or describe your own — I'll build a ready-to-launch campaign plan.</p>
@@ -187,7 +188,7 @@ function ThinkingIndicator() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
       <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-convert/15">
-        <Sparkles className="h-4 w-4 animate-pulse text-primary" />
+        <JarvisIcon className="h-4 w-4 animate-pulse" />
       </span>
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Loader2 className="h-4 w-4 animate-spin" />
@@ -242,7 +243,7 @@ function RecommendationCard({
       {intro && (
         <div className="flex items-start gap-3">
           <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-convert/15">
-            <Sparkles className="h-4 w-4 text-primary" />
+            <JarvisIcon className="h-4 w-4" />
           </span>
           <p className="pt-1.5 text-sm text-foreground">{introShown}</p>
         </div>

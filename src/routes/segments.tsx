@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Sparkles, Layers, Wand2, X, Loader2, Trash2 } from "lucide-react";
+import { Plus, Layers, Wand2, X, Loader2, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import type { Segment, SegmentRule, SegmentOperator, RuleCombinator } from "@/lib/types";
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { JarvisIcon } from "@/components/shared/JarvisIcon";
 import { WhyThisAudience } from "@/components/shared/WhyThisAudience";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
@@ -95,7 +96,7 @@ function SegmentCard({ s }: { s: Segment }) {
         <div className="flex items-center gap-1.5">
           {s.createdBy === "ai" && (
             <Badge className="gap-1 bg-primary/15 text-primary hover:bg-primary/15">
-              <Sparkles className="h-3 w-3" /> AI-created
+              <JarvisIcon className="h-3 w-3" /> AI-created
             </Badge>
           )}
           <AlertDialog>
@@ -285,7 +286,7 @@ function CreateSegmentDialog({ onDone }: { onDone: () => void }) {
           onClick={() => setMode("describe")}
           className={`flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${mode === "describe" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
         >
-          <Sparkles className="h-4 w-4" /> Describe in words
+          <JarvisIcon className="h-4 w-4" /> Describe in words
         </button>
       </div>
 
@@ -392,7 +393,7 @@ function CreateSegmentDialog({ onDone }: { onDone: () => void }) {
             rows={3}
           />
           <Button onClick={generate} disabled={generating} className="w-full gap-1.5">
-            {generating ? <><Loader2 className="h-4 w-4 animate-spin" /> Analysing audience…</> : <><Sparkles className="h-4 w-4" /> Generate segment</>}
+            {generating ? <><Loader2 className="h-4 w-4 animate-spin" /> Analysing audience…</> : <><JarvisIcon className="h-4 w-4" /> Generate segment</>}
           </Button>
           {aiSeg && (
             <motion.div ref={aiResultRef} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="space-y-2 rounded-lg border border-primary/30 bg-primary/5 p-3">

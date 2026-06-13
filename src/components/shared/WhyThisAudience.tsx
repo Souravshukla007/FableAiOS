@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Brain, RefreshCw, ChevronDown, IndianRupee, Percent, Hash, CalendarClock,
-  Type, TrendingUp, TrendingDown, Minus, Loader2, Sparkles, Check, Users, MessageSquare, History,
+  Type, TrendingUp, TrendingDown, Minus, Loader2, Check, Users, MessageSquare, History,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
@@ -12,6 +12,7 @@ import type {
 import { ChannelIcon, channelMeta } from "@/components/shared/badges";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
+import { JarvisIcon } from "@/components/shared/JarvisIcon";
 
 import { useShowEvidencePref } from "@/lib/preferences";
 import { cn } from "@/lib/utils";
@@ -215,7 +216,7 @@ export function WhyThisAudience({
           {/* Footer */}
           <div className="mt-3 flex items-center justify-between border-t pt-2.5">
             <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
-              <Sparkles className="h-3 w-3" /> Signals computed from your customer data · phrased by AI
+              <JarvisIcon className="h-3 w-3" /> Signals computed from your customer data · phrased by AI
             </span>
             <button
               onClick={() => refetch()}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, ChevronLeft, Rocket, Sparkles, Loader2, Check } from "lucide-react";
+import { ChevronRight, ChevronLeft, Rocket, Loader2, Check } from "lucide-react";
 import { api } from "@/lib/api";
 import type { Channel, CampaignPrediction } from "@/lib/types";
 import { formatINR, formatPct } from "@/lib/format";
@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { JarvisIcon } from "@/components/shared/JarvisIcon";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { WhyThisAudience } from "@/components/shared/WhyThisAudience";
@@ -106,7 +107,7 @@ function NewCampaign() {
             <div className="grid gap-2 sm:grid-cols-2">
               {segs.data?.map((s) => (
                 <button key={s.id} onClick={() => setSegmentId(s.id)} className={cn("rounded-lg border p-3 text-left transition-colors", segmentId === s.id ? "border-primary bg-accent" : "hover:bg-muted/40")}>
-                  <div className="flex items-center justify-between"><span className="font-medium">{s.name}</span>{s.createdBy === "ai" && <Sparkles className="h-3.5 w-3.5 text-primary" />}</div>
+                  <div className="flex items-center justify-between"><span className="font-medium">{s.name}</span>{s.createdBy === "ai" && <JarvisIcon className="h-3.5 w-3.5" />}</div>
                   <div className="text-xs text-muted-foreground">{s.customerCount} customers</div>
                 </button>
               ))}
@@ -138,7 +139,7 @@ function NewCampaign() {
                   >
                     <ChannelIcon channel={ch} className="mx-auto h-5 w-5" />
                     <div className="mt-1.5 text-sm font-medium">{channelMeta[ch].label}</div>
-                    {!disabled && ch === recChannel && <Badge className="absolute -right-2 -top-2 gap-0.5 bg-primary text-[9px]"><Sparkles className="h-2.5 w-2.5" /> AI</Badge>}
+                    {!disabled && ch === recChannel && <Badge className="absolute -right-2 -top-2 gap-0.5 bg-primary text-[9px]"><JarvisIcon className="h-2.5 w-2.5" /> AI</Badge>}
                     {disabled && <div className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground">Off</div>}
                   </button>
                 );

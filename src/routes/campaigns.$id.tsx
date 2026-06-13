@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Sparkles, Loader2, ArrowRight, CheckCircle2, MinusCircle, AlertTriangle, Rocket } from "lucide-react";
+import { Loader2, ArrowRight, CheckCircle2, MinusCircle, AlertTriangle, Rocket } from "lucide-react";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import { formatINR, formatPct } from "@/lib/format";
@@ -11,6 +11,7 @@ import { StatusBadge, ChannelIcon, ConfidenceBadge } from "@/components/shared/b
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { JarvisIcon } from "@/components/shared/JarvisIcon";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/campaigns/$id")({
@@ -105,7 +106,7 @@ function CampaignDetail() {
 
         <Card className="border-primary/30 bg-gradient-to-b from-primary/5 to-transparent p-5">
           <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-primary">
-            <Sparkles className="h-4 w-4" /> AI Campaign Post-Mortem
+            <JarvisIcon className="h-4 w-4" /> AI Campaign Post-Mortem
           </div>
           {analysis.isLoading || !analysis.data ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Analysing performance…</div>

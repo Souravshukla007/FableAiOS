@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Search, ArrowUpDown, Sparkles, Users as UsersIcon } from "lucide-react";
+import { Search, ArrowUpDown, Users as UsersIcon } from "lucide-react";
 import { api } from "@/lib/api";
 import type { Customer, LifecycleStage } from "@/lib/types";
 import { formatINR, formatDate, relativeTime } from "@/lib/format";
@@ -13,6 +13,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { JarvisIcon } from "@/components/shared/JarvisIcon";
 import { Badge } from "@/components/ui/badge";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
@@ -197,7 +198,7 @@ function CustomerDrawer({ customer, onClose }: { customer: Customer | null; onCl
 
               <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
                 <div className="mb-1 flex items-center gap-1.5 text-sm font-medium text-primary">
-                  <Sparkles className="h-4 w-4" /> AI insight
+                  <JarvisIcon className="h-4 w-4" /> AI insight
                 </div>
                 {insight.isLoading ? <Skeleton className="h-12 w-full" /> : <p className="text-sm text-muted-foreground">{insight.data}</p>}
               </div>

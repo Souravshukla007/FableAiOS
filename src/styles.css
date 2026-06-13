@@ -163,3 +163,34 @@
     border-radius: 9999px;
   }
 }
+
+/* Collapsible sidebar nav sections (Radix Collapsible height animation). */
+@keyframes nav-collapsible-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes nav-collapsible-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+.nav-collapsible-content {
+  overflow: hidden;
+}
+
+.nav-collapsible-content[data-state="open"] {
+  animation: nav-collapsible-down 200ms ease-out;
+}
+
+.nav-collapsible-content[data-state="closed"] {
+  animation: nav-collapsible-up 200ms ease-out;
+}
