@@ -17,6 +17,7 @@ dist
 dist-ssr
 /src/generated
 .output
+.vercel
 .vinxi
 .tanstack/**
 .nitro

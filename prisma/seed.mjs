@@ -4,10 +4,13 @@
 // avgOrderValue, first/lastOrderAt) are computed from real orders — never random.
 // CommunicationEvent rows are the append-only source of truth for the funnel.
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { faker } from "@faker-js/faker";
 
-const prisma = new PrismaClient();
+import { PrismaClient } from "../src/generated/prisma/client.ts";
+
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 faker.seed(20260611); // reproducible data
 
 // ---------------------------------------------------------------------------

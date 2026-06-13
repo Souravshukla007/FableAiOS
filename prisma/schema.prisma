@@ -3,11 +3,15 @@
 // truth for the delivery funnel; Communication.status is derived from it.
 
 generator client {
-  provider      = "prisma-client-js"
-  // "native" keeps local (Windows/macOS) dev working; the rhel target is the
-  // engine Vercel's serverless Node runtime (Amazon Linux) needs. Without it,
-  // `new PrismaClient()` throws at import on Vercel and every route 500s.
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  // Rust-free Prisma Client (GA since 6.16). No native query-engine binary is
+  // generated, so there is nothing for Nitro/Vercel to fail to bundle — the
+  // client talks to Postgres through a JS driver adapter (@prisma/adapter-pg).
+  // This is the correct setup for serverless (Vercel functions).
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  runtime      = "nodejs"
+  moduleFormat = "esm"
+  engineType   = "client"
 }
 
 datasource db {

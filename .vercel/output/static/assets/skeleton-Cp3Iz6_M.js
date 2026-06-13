@@ -1,1 +1,0 @@
-import{j as e}from"./index-QdJdRVkB.js";import{a as m}from"./card-18IpnpFG.js";function t({className:r,...a}){return e.jsx("div",{className:m("animate-pulse rounded-md bg-primary/10",r),...a})}export{t as S};
